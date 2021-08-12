@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "259439054813",
+    "project_id": "africanstyle-15779",
+    "storage_bucket": "africanstyle-15779.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:259439054813:android:ca8d13b0cc372c8e057034",
+        "android_client_info": {
+          "package_name": "com.hopecode.chicmode"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "259439054813-rq339po4e1rvh02mo0qd815hldmv2ok8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqOnI5BTZxqkxLXY9cZot20JQoXZVFiHg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "259439054813-rq339po4e1rvh02mo0qd815hldmv2ok8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
