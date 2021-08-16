@@ -58,6 +58,7 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
   }
 
   RxList<Product> productsList = <Product>[].obs;
+  RxList<Product> productsListProd = <Product>[].obs;
   bool isLoading = true;
 
   @override
@@ -79,7 +80,7 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
     PhotoProvider().getPhotoList(
       onSuccess: (photo) {
         productsList.addAll(photo);
-        print(productsList);
+        productsListProd.addAll(photo);
         getChipProduct(productChip.values[0]);
         isLoading = false;
         update();
@@ -118,19 +119,20 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
     print(chip);
     switch (chip) {
       case productChip.TOUT:
-        //dataProductChip.value = dataProduct.toList()..shuffle();
-        return  productsList.value=productsList.toList()..shuffle();
+            productsList.value=productsListProd.toList()..shuffle();
+        return  productsList;
 
       case productChip.RECENT:
-     // dataProductChip.value = dataProduct.reversed.toList();
-        return  productsList.value=productsList.reversed.toList();
+                productsList.value=productsListProd.reversed.toList();
+        return  productsList;
 
       case productChip.MIEUX_NOTE:
-        return productsList.value=productsList.where((o) => o.note >= 3).toList()
-          ..shuffle();
+               productsList.value=productsListProd.where((o) => o.note >= 3).toList();
+        return productsList;
 
       case productChip.ALEATOIRE:
-        return  productsList.value=productsList.reversed.toList();
+                productsList.value=productsListProd.reversed.toList();
+        return  productsList;
     }
     update();
     return productsList;

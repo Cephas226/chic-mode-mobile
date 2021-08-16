@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,67 @@ class FavorisPage extends GetView<FavorisController> {
     );
   }
 }
-
+Widget builDetailBodyFav(controller, index, nativeAdController,context,data) {
+  return Scaffold(
+    floatingActionButton: buildSpeedDial(controller,index,context),
+    appBar: AppBar(
+      backgroundColor: Color(0xFFF70759),
+      title: const Text('Details'),
+    ),
+    body: CarouselSlider.builder(
+      itemCount: data.length,
+      options: CarouselOptions(
+        height: 800,
+        scrollDirection: Axis.vertical,
+        initialPage: index,
+        viewportFraction: 1,
+        aspectRatio: 16 / 9,
+        enableInfiniteScroll: false,
+        autoPlay: false,
+      ),
+      itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) =>
+          Stack(
+            children: <Widget>[
+              Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.circular(20)),
+                clipBehavior: Clip.antiAlias,
+                child: Container(
+                  padding: const EdgeInsets.all(0.0),
+                  height: double.infinity,
+                  color: Color(0xFFF70759),
+                  child: PhotoHero(
+                    photo: data[itemIndex].url,
+                    width: double.infinity,
+                    height: double.infinity,
+                    onTap: () {
+                      Get.back();
+                    },
+                  ),
+                ),
+              ),
+              /*_buildBarDetail(context, controller, index),*/
+              Positioned.fill(
+                child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      margin: EdgeInsets.all(8),
+                      height: 90,
+                      color: Colors.white24,
+                      child: NativeAdmob(
+                        adUnitID: banniereUnitID,
+                        controller: nativeAdController,
+                        type: NativeAdmobType.full,
+                        loading: Center(child: CircularProgressIndicator()),
+                        error: Text('failed to load'),
+                      ),
+                    )),
+              ),
+            ],
+          ),
+    ),
+  );
+}
 Widget _builListView() {
   return ValueListenableBuilder(
     valueListenable: _favController.valueListenable,
@@ -62,10 +123,7 @@ Widget _builListView() {
                     child: PhotoHero(
                       photo: product.url,
                       width: double.infinity,
-                      onTap: (()=>Get.to(builDetailBody(
-                          homeController,
-                          index,
-                          _nativeAdController,context))),
+                      onTap: ()=>{},
                     ),
                   ),
                 ),

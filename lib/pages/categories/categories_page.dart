@@ -87,7 +87,7 @@ class CategoriesPage extends GetView<CategoriesController> {
                                             onTap: (()=>Get.to(builDetailBody(
                                                 controller,
                                                 index,
-                                                _nativeAdController,context))),
+                                                _nativeAdController,context,productsListCritere))),
                                             child: Card(
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
@@ -175,101 +175,4 @@ class CategoriesPage extends GetView<CategoriesController> {
       ),
     );
   }
-}
-
-_saveImage(url, name, context) async {
-  if (await Permission.storage.request().isGranted) {
-    var client = http.Client();
-    var response = await client.get(Uri.parse(url));
-    final result = await ImageGallerySaver.saveImage(
-        Uint8List.fromList(response.bodyBytes),
-        quality: 60,
-        name: "model" + name.toString());
-    print(result["filePath"]);
-    Share.shareFiles(
-        [result['filePath'].toString().replaceAll(RegExp('file://'), '')],
-        text:
-            'Pour plus de modèles de pagnes, télécharges l\'application ChicMode via ce lien 👉🏼 https://bit.ly/chicmode');
-  } else if (await Permission.storage.request().isPermanentlyDenied) {
-    await openAppSettings();
-  } else if (await Permission.storage.request().isDenied) {}
-}
-
-_shareImage(url, name, context) async {
-  if (await Permission.storage.request().isGranted) {
-    var client = http.Client();
-    var response = await client.get(Uri.parse(url));
-    final result = await ImageGallerySaver.saveImage(
-        Uint8List.fromList(response.bodyBytes),
-        quality: 60,
-        name: "model" + name.toString());
-    print(result["filePath"]);
-    Share.shareFiles(
-        [result['filePath'].toString().replaceAll(RegExp('file://'), '')],
-        text:
-            'Pour plus de modèles de pagnes, télécharges l\'application ChicMode via ce lien 👉🏼 https://bit.ly/chicmode');
-  } else if (await Permission.storage.request().isPermanentlyDenied) {
-    await openAppSettings();
-  }
-}
-Widget _builDetailBody(controller, index, nativeAdController,context) {
-  return Scaffold(
-    floatingActionButton: buildSpeedDial(controller,index,context),
-    appBar: AppBar(
-      backgroundColor: Color(0xFFF70759),
-      title: const Text('Details'),
-    ),
-    body: CarouselSlider.builder(
-      itemCount: controller.productsList.length,
-      options: CarouselOptions(
-        height: 800,
-        scrollDirection: Axis.vertical,
-        initialPage: index,
-        viewportFraction: 1,
-        aspectRatio: 16 / 9,
-        enableInfiniteScroll: false,
-        autoPlay: false,
-      ),
-      itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) =>
-          Stack(
-            children: <Widget>[
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.circular(20)),
-                clipBehavior: Clip.antiAlias,
-                child: Container(
-                  padding: const EdgeInsets.all(0.0),
-                  height: double.infinity,
-                  color: Color(0xFFF70759),
-                  child: PhotoHero(
-                    photo: controller.productsList[itemIndex].url,
-                    width: double.infinity,
-                    height: double.infinity,
-                    onTap: () {
-                      Get.back();
-                    },
-                  ),
-                ),
-              ),
-              /*_buildBarDetail(context, controller, index),*/
-              Positioned.fill(
-                child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      margin: EdgeInsets.all(8),
-                      height: 90,
-                      color: Colors.white24,
-                      child: NativeAdmob(
-                        adUnitID: banniereUnitID,
-                        controller: nativeAdController,
-                        type: NativeAdmobType.full,
-                        loading: Center(child: CircularProgressIndicator()),
-                        error: Text('failed to load'),
-                      ),
-                    )),
-              ),
-            ],
-          ),
-    ),
-  );
 }

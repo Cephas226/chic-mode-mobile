@@ -121,7 +121,7 @@ class HomePage extends StatelessWidget {
                                                     detailBody: builDetailBody(
                                                         controller,
                                                         index,
-                                                        _nativeAdController,context)),
+                                                        _nativeAdController,context,controller.productsList)),
                                               ))));
                             },
                           ),
@@ -397,7 +397,7 @@ SpeedDial buildSpeedDial(controller, index, context) {
       ],
     );
 }
-Widget builDetailBody(controller, index, nativeAdController,context) {
+Widget builDetailBody(controller, index, nativeAdController,context,data) {
   return Scaffold(
     floatingActionButton: buildSpeedDial(controller,index,context),
     appBar: AppBar(
@@ -405,7 +405,7 @@ Widget builDetailBody(controller, index, nativeAdController,context) {
       title: const Text('Details'),
     ),
     body: CarouselSlider.builder(
-      itemCount: controller.productsList.length,
+      itemCount: data.length,
       options: CarouselOptions(
         height: 800,
         scrollDirection: Axis.vertical,
@@ -427,7 +427,7 @@ Widget builDetailBody(controller, index, nativeAdController,context) {
               height: double.infinity,
               color: Color(0xFFF70759),
               child: PhotoHero(
-                photo: controller.productsList[itemIndex].url,
+                photo: data[itemIndex].url,
                 width: double.infinity,
                 height: double.infinity,
                 onTap: () {
