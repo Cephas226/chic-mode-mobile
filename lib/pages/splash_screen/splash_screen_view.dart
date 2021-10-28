@@ -46,7 +46,7 @@ class SplashScreenView extends GetView<SplashScreenController> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Chargement en cours", style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.w800)),
+                            Text("Chargement en cours", style: TextStyle(color: Colors.white,fontSize: 12,fontWeight: FontWeight.w800)),
                             SpinKitThreeBounce(
                               color: Colors.redAccent,
                               size: 50.0,

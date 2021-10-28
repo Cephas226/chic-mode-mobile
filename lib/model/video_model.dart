@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:hive/hive.dart';
-
 class Video {
 
   int videoId;
@@ -10,7 +8,7 @@ class Video {
 
   String name;
 
-  Video({this.videoId, this.url, this.name});
+  Video({required this.videoId, required this.url,required this.name});
 
   factory Video.fromJson(Map<String, dynamic> json) => Video(
     videoId: json["productId"],

@@ -24,12 +24,12 @@ class Dataservices {
 
 }
 class ApiRequest {
-  final String url;
-  final Map data;
+  late final String url;
+  late final Map data;
 
   ApiRequest({
-    @required this.url,
-    this.data,
+    required this.url,
+    required this.data,
   });
 
   Dio _dio() {
@@ -40,11 +40,11 @@ class ApiRequest {
   }
 
   void get({
-    Function() beforeSend,
-    Function(dynamic data) onSuccess,
-    Function(dynamic error) onError,
+    required Function() beforeSend,
+    required Function(dynamic data) onSuccess,
+    required Function(dynamic error) onError,
   }) {
-    _dio().get(this.url, queryParameters: this.data).then((res) {
+    _dio().get(this.url).then((res) {
       if (onSuccess != null) onSuccess(res.data);
     }).catchError((error) {
       if (onError != null) onError(error);

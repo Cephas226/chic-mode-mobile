@@ -1,21 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_admob/flutter_native_admob.dart';
-import 'package:flutter_native_admob/native_admob_controller.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:getx_app/pages/home/home_controller.dart';
 import 'package:getx_app/pages/home/home_page.dart';
-import 'package:getx_app/pages/photos/loading_overlay.dart';
-import 'package:getx_app/services/backend_service.dart';
-import 'package:getx_app/themes/color_theme.dart';
-import 'package:getx_app/widget/photo_widget/photohero.dart';
 import 'rate_controller.dart';
 
 class AboutPage extends GetView<RateController> {
   CarouselController carouselController = new CarouselController();
-  final _nativeAdController = NativeAdmobController();
+ // final _nativeAdController = NativeAdmobController();
   List<String> imageList = [];
   var currentPos = 0;
   @override

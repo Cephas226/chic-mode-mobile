@@ -1,26 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_native_admob/native_admob_controller.dart';
-//import 'package:flutter_money_formatter/flutter_money_formatter.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:getwidget/components/loader/gf_loader.dart';
 import 'package:getwidget/types/gf_loader_type.dart';
-import 'package:getx_app/themes/color_theme.dart';
-import 'dart:math' as math;
 import 'package:video_player/video_player.dart';
-import 'package:firebase_admob/firebase_admob.dart';
-import 'package:flutter_native_admob/flutter_native_admob.dart';
+//import 'package:firebase_admob/firebase_admob.dart';
+//import 'package:flutter_native_admob/flutter_native_admob.dart';
 class TikTokVideoPlayer extends StatefulWidget {
   final String url;
 
-  const TikTokVideoPlayer({this.url});
+  const TikTokVideoPlayer({required this.url});
 
   @override
   _TikTokVideoPlayerState createState() => _TikTokVideoPlayerState();
 }
 final RouteObserver<PageRoute> routeObserver = new RouteObserver<PageRoute>();
 class _TikTokVideoPlayerState extends State<TikTokVideoPlayer> with RouteAware{
-  VideoPlayerController _controller;
-  final _nativeAdController = NativeAdmobController();
+  late VideoPlayerController _controller;
+ // final _nativeAdController = NativeAdmobController();
   @override
   void initState() {
     super.initState();
@@ -37,7 +32,7 @@ class _TikTokVideoPlayerState extends State<TikTokVideoPlayer> with RouteAware{
 
   @override
   void didChangeDependencies() {
-    routeObserver.subscribe(this, ModalRoute.of(context));//Subscribe it here
+    //routeObserver.subscribe(this, ModalRoute.of(context));//Subscribe it here
     super.didChangeDependencies();
   }
   @override
@@ -79,7 +74,7 @@ class _TikTokVideoPlayerState extends State<TikTokVideoPlayer> with RouteAware{
             color: Colors.black,
             height: double.infinity,
             width: 500,
-            child: _controller.value.initialized
+            child: _controller.value.isInitialized
                 ? GestureDetector(
               onTap: () {
                 if (_controller.value.isPlaying) {
@@ -164,23 +159,6 @@ class _TikTokVideoPlayerState extends State<TikTokVideoPlayer> with RouteAware{
                   ),
                 ),
               )),*/
-          Positioned.fill(
-            child: Align(
-                alignment: Alignment.bottomCenter,
-                child:
-                Container(
-                    margin: EdgeInsets.all(8),
-                    height: 90,
-                    color: Colors.white24,
-                    child: NativeAdmob(
-                      adUnitID: banniereUnitID,
-                      controller: _nativeAdController,
-                      type: NativeAdmobType.full,
-                      loading: Center(child: CircularProgressIndicator()),
-                      error: Text('failed to load'),
-                    ))
-            ),
-          ),
         ],
       );
   }

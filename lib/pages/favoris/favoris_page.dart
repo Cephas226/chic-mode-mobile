@@ -1,9 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:favorite_button/favorite_button.dart';
-import 'package:firebase_admob/firebase_admob.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_native_admob/flutter_native_admob.dart';
-import 'package:flutter_native_admob/native_admob_controller.dart';
+import 'package:favorite_button/favorite_button.dart'; 
+import 'package:flutter/material.dart'; 
 import 'package:get/get.dart';
 import 'package:getx_app/model/product_model.dart';
 import 'package:getx_app/pages/favoris/favoris_controller.dart';
@@ -13,9 +10,11 @@ import 'package:getx_app/themes/color_theme.dart';
 import 'package:getx_app/widget/photo_widget/photohero.dart';
 import 'dart:math' as math;
 
+import 'package:hive/hive.dart';
+
 final FavorisController _favController = Get.put(FavorisController());
 final snackBar = SnackBar(content: Text('Image retirée avec succès'));
-final _nativeAdController = NativeAdmobController();
+ 
 final HomeController homeController = Get.put(HomeController());
 class FavorisPage extends GetView<FavorisController> {
   @override
@@ -72,23 +71,6 @@ Widget builDetailBodyFav(controller, index, nativeAdController,context,data) {
                   ),
                 ),
               ),
-              /*_buildBarDetail(context, controller, index),*/
-              Positioned.fill(
-                child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      margin: EdgeInsets.all(8),
-                      height: 90,
-                      color: Colors.white24,
-                      child: NativeAdmob(
-                        adUnitID: banniereUnitID,
-                        controller: nativeAdController,
-                        type: NativeAdmobType.full,
-                        loading: Center(child: CircularProgressIndicator()),
-                        error: Text('failed to load'),
-                      ),
-                    )),
-              ),
             ],
           ),
     ),
@@ -98,16 +80,17 @@ Widget _builListView() {
   return ValueListenableBuilder(
     valueListenable: _favController.valueListenable,
     builder: (context, box, _) {
-      if (box.values.length == 0)
+      print(Hive.box<Product>('product').values);
+      if (Hive.box<Product>('product').values.length == 0)
         return Center(
           child: Text("Aucune image"),
         );
       return ListView.builder(
         primary: true,
         padding: EdgeInsets.only(bottom: 95),
-        itemCount: box.values.length,
+        itemCount: Hive.box<Product>('product').length,
         itemBuilder: (context, int index) {
-          Product product = box.getAt(index);
+          Product? product = Hive.box<Product>('product').getAt(index);
           return GestureDetector(
               child: ClipRRect(
             child: Stack(
@@ -121,7 +104,7 @@ Widget _builListView() {
                     //height: double.infinity,
                     color: Color(0xFFF70759),
                     child: PhotoHero(
-                      photo: product.url,
+                      photo: product!.url.toString(),
                       width: double.infinity,
                       onTap: ()=>{},
                     ),

@@ -4,8 +4,8 @@ class FloatingActionButtonWidget extends StatelessWidget {
   final VoidCallback onPressed;
 
   const FloatingActionButtonWidget({
-    Key key,
-    @required this.onPressed,
+    required Key key,
+    required this.onPressed,
   }) : super(key: key);
 
   @override

@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 
 class PhotoHero extends StatelessWidget {
   const PhotoHero(
-      {Key key, this.photo, this.onTap, this.width, this.height, this.fit})
-      : super(key: key);
-
+      { required this.photo, required this.onTap, required this.width,  this.height});
   final String photo;
   final VoidCallback onTap;
   final double width;
-  final double height;
-  final BoxFit fit;
+  final double? height;
+  //final BoxFit fit;
 
   Widget build(BuildContext context) {
     return SizedBox(
@@ -23,7 +21,7 @@ class PhotoHero extends StatelessWidget {
             onTap: onTap,
             child: Image.network(
               photo,
-              fit: fit,
+              //fit: fit,
             ),
           ),
         ),

@@ -2,8 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:getx_app/pages/categories/categories_page.dart';
-import 'package:getx_app/pages/home/home_page.dart';
 import 'package:getx_app/pages/favoris/favoris_page.dart';
+import 'package:getx_app/pages/home/home_page.dart';
+ 
 import 'package:getx_app/widget/oval-right-clipper.dart';
 import '../../main.dart';
 import 'dashboard_controller.dart';
@@ -45,7 +46,7 @@ class DashboardPage extends StatelessWidget {
                 icon: Icons.list,
                 label: 'Catégories',
               ),
-              _bottomNavigationBarItem(
+             _bottomNavigationBarItem(
                 icon: CupertinoIcons.heart,
                 label: 'Favoris',
               ),
@@ -56,7 +57,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  _bottomNavigationBarItem({IconData icon, String label}) {
+  _bottomNavigationBarItem({required IconData icon, required String label}) {
     return BottomNavigationBarItem(
       icon: Icon(icon),
       label: label,

@@ -9,7 +9,7 @@ class FavorisController extends GetxController {
   final String title = 'Accueil';
   List<Product> allProduct = [];
  List<Product> productList = [];
-  Box<Product> productBox;
+  Box<Product>? productBox;
   var valueListenable;
   @override
   void onInit() async{
@@ -24,10 +24,10 @@ class FavorisController extends GetxController {
   }
   Future<List<Product>> getFavProduct() async {
     if (productBox!=null){
-      for (int i = 0; i < productBox.length; i++) {
-        var prodMap = productBox.getAt(i);
+      for (int i = 0; i < productBox!.length; i++) {
+        var prodMap = productBox!.getAt(i);
         Product tmp = Product();
-        tmp.productId = prodMap.productId;
+        tmp.productId = prodMap!.productId;
         tmp.categorie = prodMap.categorie;
         tmp.url = prodMap.url;
         productList.add(tmp);
@@ -36,7 +36,7 @@ class FavorisController extends GetxController {
     return productList;
   }
   void removeProduct(int id) async{
-    productBox.deleteAt(id);
+    productBox!.deleteAt(id);
     print("succes");
   }
 }

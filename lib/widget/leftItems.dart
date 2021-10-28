@@ -8,16 +8,16 @@ class LeftItems extends StatefulWidget {
   final String authorName;
 
   const LeftItems(
-      {this.userName, this.description, this.musicName, this.authorName});
+      {required this.userName, required this.description, required this.musicName, required this.authorName});
 
   @override
   _LeftItemsState createState() => _LeftItemsState();
 }
 
 class _LeftItemsState extends State<LeftItems>
-    with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<Offset> _offsetAnimation;
+  with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _offsetAnimation;
 
   @override
   void initState() {

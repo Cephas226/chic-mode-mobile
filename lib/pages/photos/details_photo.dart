@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_admob/flutter_native_admob.dart';
-import 'package:flutter_native_admob/native_admob_controller.dart';
+//import 'package:flutter_native_admob/flutter_native_admob.dart';
+//import 'package:flutter_native_admob/native_admob_controller.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:getx_app/model/product_model.dart';
 import 'package:getx_app/themes/color_theme.dart';
@@ -15,12 +15,12 @@ class DetailsPhoto extends StatelessWidget {
   final Padding actionPanel;
   final Product product;
   const DetailsPhoto(
-      {Key key, this.index, this.actionPanel, this.product, this.dataLength})
+      {required Key key, required this.index, required this.actionPanel, required this.product, required this.dataLength})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final _nativeAdController = NativeAdmobController();
+   // final _nativeAdController = NativeAdmobController();
     return Scaffold(
       //floatingActionButton: buildSpeedDial(controller,index,context),
       appBar: AppBar(
@@ -51,7 +51,7 @@ class DetailsPhoto extends StatelessWidget {
                 height: double.infinity,
                 color: Color(0xFFF70759),
                 child: PhotoHero(
-                  photo: product.url,
+                  photo: product.url.toString(),
                   width: double.infinity,
                   height: double.infinity,
                   onTap: () {
@@ -61,22 +61,6 @@ class DetailsPhoto extends StatelessWidget {
               ),
             ),
             actionPanel,
-            Positioned.fill(
-              child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    margin: EdgeInsets.all(8),
-                    height: 90,
-                    color: Colors.white24,
-                    child: NativeAdmob(
-                      adUnitID: banniereUnitID,
-                      controller: _nativeAdController,
-                      type: NativeAdmobType.full,
-                      loading: Center(child: CircularProgressIndicator()),
-                      error: Text('failed to load'),
-                    ),
-                  )),
-            ),
           ],
         ),
       ),

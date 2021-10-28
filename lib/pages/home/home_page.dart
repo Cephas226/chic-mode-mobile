@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_admob/flutter_native_admob.dart';
-import 'package:flutter_native_admob/native_admob_controller.dart';
+import 'package:flutter/services.dart';
+//import 'package:flutter_native_admob/flutter_native_admob.dart';
+//import 'package:flutter_native_admob/native_admob_controller.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:get/get.dart';
 import 'package:getx_app/model/product_model.dart';
@@ -13,26 +15,92 @@ import 'package:getx_app/pages/rate/about_page.dart';
 import 'package:getx_app/pages/rate/rate_page.dart';
 import 'package:getx_app/pages/videos/took.dart';
 import 'package:getx_app/themes/color_theme.dart';
-import 'dart:math' as math;
 import 'package:getx_app/widget/oval-right-clipper.dart';
 import 'package:getx_app/widget/photo_widget/photohero.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:in_app_update/in_app_update.dart';
+import 'package:new_version/new_version.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rating_dialog/rating_dialog.dart';
 import 'package:share/share.dart';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../main.dart';
 import 'home_controller.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final HomeController _prodController = Get.put(HomeController());
   CarouselController carouselController = new CarouselController();
-  final _nativeAdController = NativeAdmobController();
+
   String titlexy = 'Accueil';
   List<String> imageList = [];
   var currentPos = 0;
+  BannerAd? bannerAd;
+  bool? isLoading;
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
+  bool _flexibleUpdateAvailable = false;
+  @override
+  void initState() {
+    loadBanner();
+    _checkVersion();
+    super.initState();
+  }
+   void _checkVersion() async {
+    final newVersion = NewVersion(
+      androidId: "com.snapchat.android",
+    );
+    final status = await newVersion.getVersionStatus();
+    newVersion.showUpdateDialog(
+      context: context,
+      versionStatus: status!,
+      dialogTitle: "UPDATE!!!",
+      dismissButtonText: "Skip",
+      dialogText: "Please update the app from " + "${status.localVersion}" + " to " + "${status.storeVersion}",
+      dismissAction: () {
+        SystemNavigator.pop();
+      },
+      updateButtonText: "Lets update",
+    );
+
+    print("DEVICE : " + status.localVersion);
+    print("STORE : " + status.storeVersion);
+  }
+  loadBanner(){
+    bannerAd = BannerAd(
+        adUnitId: banniereUnitID,
+        request: AdRequest(),
+        size: AdSize.banner,
+        listener: BannerAdListener(onAdFailedToLoad: (_, error) {
+          print('Ad Failed to Load with Error');
+        }, onAdLoaded: (_) {
+          setState(() {
+            isLoading = true;
+          });
+        }));
+    bannerAd!.load();
+  }
+
+  void showSnack(String text) {
+    if (_scaffoldKey.currentContext != null) {
+      ScaffoldMessenger.of(_scaffoldKey.currentContext!)
+          .showSnackBar(SnackBar(content: Text(text)));
+    }
+  }
+  @override
+  void dispose() {
+    bannerAd!.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     _prodController.monContext = context;
@@ -42,11 +110,25 @@ class HomePage extends StatelessWidget {
       'Mieux noté',
       'Aléatoire'
     ];
+
+    Widget checkForAd() {
+      if (isLoading == true) {
+        return Container(
+          child: AdWidget(ad: bannerAd!),
+          width: bannerAd!.size.width.toDouble(),
+          height: bannerAd!.size.height.toDouble(),
+          alignment: Alignment.center,
+        );
+      } else {
+        return Container();
+      }
+    }
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
           appBar: AppBar(
-            title: Obx(() => Text(_prodController.myHandler.value.title)),
+            title: Obx(() => Text(_prodController.myHandler.value.title.toString())),
             bottom: TabBar(
               indicatorColor: Colors.black,
               controller: _prodController.controller,
@@ -62,6 +144,7 @@ class HomePage extends StatelessWidget {
             elevation: 0,
             backgroundColor: Color(0xFFF70759),
           ),
+          //bottomNavigationBar: checkForAd(),
           drawer: _buildDrawer(context),
           body: TabBarView(
             controller: _prodController.controller,
@@ -106,23 +189,26 @@ class HomePage extends StatelessWidget {
                                         crossAxisSpacing: 2,
                                         mainAxisSpacing: 2,
                                       ),
-                                      itemBuilder:
-                                          (BuildContext context, int index) =>
-                                              Obx(
-                                                () => PhotoListItem(
-                                                    index: index,
-                                                    product: controller
-                                                        .productsList[index],
-                                                    toolBar: _buildToolBar(
-                                                        context,
-                                                        controller,
-                                                        index,
-                                                        _nativeAdController),
-                                                    detailBody: builDetailBody(
-                                                        controller,
-                                                        index,
-                                                        _nativeAdController,context,controller.productsList)),
-                                              ))));
+                                      itemBuilder: (BuildContext context,
+                                              int index) =>
+                                          Obx(
+                                            () => PhotoListItem(
+                                                index: index,
+                                                product: controller
+                                                    .productsList[index],
+                                                toolBar: _buildToolBar(
+                                                  context,
+                                                  controller,
+                                                  index,
+                                                  //  _nativeAdController
+                                                ),
+                                                detailBody: builDetailBody(
+                                                    controller,
+                                                    index,
+                                                    // _nativeAdController
+                                                    context,
+                                                    controller.productsList)),
+                                          ))));
                             },
                           ),
                         ),
@@ -292,7 +378,7 @@ Widget _buildRow(IconData icon, String title, route, context) {
 }
 
 /*______ModeleBuilder______*/
-Widget _buildToolBar(context, controller, index, nativeAdController) {
+Widget _buildToolBar(context, controller, index) {
   return Align(
     alignment: Alignment.centerRight,
     child: Container(
@@ -329,8 +415,8 @@ Widget _buildToolBar(context, controller, index, nativeAdController) {
     ),
   );
 }
-shareImage(url, name, context) async {
 
+shareImage(url, name, context) async {
   if (await Permission.storage.request().isGranted) {
     var client = http.Client();
     var response = await client.get(Uri.parse(url));
@@ -338,68 +424,68 @@ shareImage(url, name, context) async {
         Uint8List.fromList(response.bodyBytes),
         quality: 60,
         name: "model" + name.toString());
-  print(result);
-    Share.shareFiles([
-      result['filePath']
-          .toString()
-          .replaceAll(RegExp('file://'), '')
-    ], text: 'Pour plus de modèles de pagnes, télécharges l\'application ChicMode via ce lien 👉🏼 https://bit.ly/chicmode');
+    print(result);
+    Share.shareFiles(
+        [result['filePath'].toString().replaceAll(RegExp('file://'), '')],
+        text:
+            'Pour plus de modèles de pagnes, télécharges l\'application ChicMode via ce lien 👉🏼 https://bit.ly/chicmode');
   } else if (await Permission.storage.request().isPermanentlyDenied) {
     await openAppSettings();
   } else if (await Permission.storage.request().isDenied) {}
+}
 
-}
 SpeedDial buildSpeedDial(controller, index, context) {
-  return
-    SpeedDial(
-      animatedIcon: AnimatedIcons.menu_close,
-      animatedIconTheme: IconThemeData(size: 28.0),
-      backgroundColor: Colors.blue[900],
-      visible: true,
-      curve: Curves.easeInCubic,
-      children: [
-        SpeedDialChild(
-          child: Icon(Icons.file_download, color: Colors.white),
-          backgroundColor: Colors.blueAccent,
-          onTap: () => {
-            saveImage(controller.productsList[index].url,
-                controller.productsList[index].productId, context)
-          },
-          labelStyle: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
-          labelBackgroundColor: Colors.black,
-        ),
-        SpeedDialChild(
-          child: IconButton(
-              onPressed: () => {},
-              icon: FavoriteButton(
-                  iconSize: 40,
-                  isFavorite: false,
-                  valueChanged: (_isFavorite) {
-                    if (_isFavorite) {
-                      controller.addProduct(
-                          controller.productsList[index], context);
-                    }
-                  })),
-          backgroundColor: Colors.blueAccent,
-          onTap: () => {},
-          labelStyle: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
-          labelBackgroundColor: Colors.black,
-        ),
-        SpeedDialChild(
-          child: Icon(Icons.share, color: Colors.white),
-          backgroundColor: Colors.blueAccent,
-          onTap: () => {
-            shareImage(controller.productsList[index].url,controller.productsList[index].productId,context)
-          },
-          labelStyle: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
-          labelBackgroundColor: Colors.black,
-        ),
-      ],
-    );
+  return SpeedDial(
+    animatedIcon: AnimatedIcons.menu_close,
+    animatedIconTheme: IconThemeData(size: 28.0),
+    backgroundColor: Colors.blue[900],
+    visible: true,
+    curve: Curves.easeInCubic,
+    children: [
+      SpeedDialChild(
+        child: Icon(Icons.file_download, color: Colors.white),
+        backgroundColor: Colors.blueAccent,
+        onTap: () => {
+          saveImage(controller.productsList[index].url,
+              controller.productsList[index].productId, context)
+        },
+        labelStyle: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+        labelBackgroundColor: Colors.black,
+      ),
+      SpeedDialChild(
+        child: IconButton(
+            onPressed: () => {},
+            icon: FavoriteButton(
+                iconSize: 40,
+                isFavorite: false,
+                valueChanged: (_isFavorite) {
+                  if (_isFavorite) {
+                    controller.addProduct(
+                        controller.productsList[index], context);
+                  }
+                })),
+        backgroundColor: Colors.blueAccent,
+        onTap: () => {},
+        labelStyle: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+        labelBackgroundColor: Colors.black,
+      ),
+      SpeedDialChild(
+        child: Icon(Icons.share, color: Colors.white),
+        backgroundColor: Colors.blueAccent,
+        onTap: () => {
+          shareImage(controller.productsList[index].url,
+              controller.productsList[index].productId, context)
+        },
+        labelStyle: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+        labelBackgroundColor: Colors.black,
+      ),
+    ],
+  );
 }
-Widget builDetailBody(controller, index, nativeAdController,context,data) {
+
+Widget builDetailBody(controller, index, context, data) {
   return Scaffold(
-    floatingActionButton: buildSpeedDial(controller,index,context),
+    floatingActionButton: buildSpeedDial(controller, index, context),
     appBar: AppBar(
       backgroundColor: Color(0xFFF70759),
       title: const Text('Details'),
@@ -436,23 +522,6 @@ Widget builDetailBody(controller, index, nativeAdController,context,data) {
               ),
             ),
           ),
-          /*_buildBarDetail(context, controller, index),*/
-          Positioned.fill(
-            child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  margin: EdgeInsets.all(8),
-                  height: 90,
-                  color: Colors.white24,
-                  child: NativeAdmob(
-                    adUnitID: banniereUnitID,
-                    controller: nativeAdController,
-                    type: NativeAdmobType.full,
-                    loading: Center(child: CircularProgressIndicator()),
-                    error: Text('failed to load'),
-                  ),
-                )),
-          ),
         ],
       ),
     ),
@@ -471,7 +540,7 @@ void showRatingAppDialog(context) {
     ),
     submitButton: 'Envoyez',
     onCancelled: () => print('Annulez'),
-    commentHint: "Dites nous un mot en commentaire" ,
+    commentHint: "Dites nous un mot en commentaire",
     onSubmitted: (response) {
       print('rating: ${response.rating}, '
           'comment: ${response.comment}');
@@ -526,6 +595,3 @@ goToStore() async {
 mysnackBar(message) {
   return SnackBar(content: Text(message));
 }
-
-
-

@@ -27,7 +27,8 @@ final primaryBGrey = Color(0xff222831);
 
 final authHintText = Color(0xff8E8E8E);
 
-VideoPlayerController _controller;
+late VideoPlayerController _controller;
 
-final banniereUnitID = 'ca-app-pub-8772568690813006/9513111793';
-final interstitielUnitID = 'ca-app-pub-8772568690813006/8642689732';
+final banniereUnitID = 'ca-app-pub-8772568690813006/6617141672';
+final banniereUnitID1 = 'ca-app-pub-8772568690813006/8540915637';
+final interstitielUnitID = 'ca-app-pub-8772568690813006/8220678019';

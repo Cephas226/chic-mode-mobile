@@ -11,8 +11,8 @@ class TokPage extends StatefulWidget {
 final HomeController _prodController = Get.put(HomeController());
 class _TokPageState extends State<TokPage> {
   int currentIndex = 0;
-  PageController pageController;
-
+  PageController? pageController;
+  final controller = new PageController(initialPage: 999);
   @override
   Widget build(BuildContext context) {
     return
@@ -22,10 +22,10 @@ class _TokPageState extends State<TokPage> {
           color: Colors.black,
             icon: new Icon(Icons.arrow_back),
             onPressed: ()  {
-              Get.off(()=>DashboardPage());
-                  _prodController.createInterstitialAd()
+           Get.back();
+               /*   _prodController.createInterstitialAd()
                 ..load()
-                ..show();
+                ..show();*/
             }
         ),
         title: Text(
@@ -44,7 +44,14 @@ class _TokPageState extends State<TokPage> {
           padding: const EdgeInsets.all(0.0),
           height: double.infinity,
           color: Color(0xFFF70759),
-          child: PageView(
+          child:
+          PageView.builder(
+              controller: controller,
+              itemBuilder: (context, index) {
+                return  Trending();
+              }
+          )
+         /* PageView(
             controller: pageController,
             children: <Widget>[
               Center(
@@ -59,7 +66,7 @@ class _TokPageState extends State<TokPage> {
                 },
               );
             },
-          ),
+          ),*/
         ),
       ),
     );

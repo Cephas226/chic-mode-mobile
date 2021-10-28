@@ -5,9 +5,9 @@ class TextFieldWidget extends StatelessWidget {
   final String hintText;
 
   const TextFieldWidget({
-    Key key,
-    @required this.controller,
-    @required this.hintText,
+    required Key key,
+    required this.controller,
+    required this.hintText,
   }) : super(key: key);
 
   @override

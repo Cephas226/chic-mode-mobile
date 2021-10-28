@@ -8,24 +8,24 @@ part 'product_model.g.dart';
 class Product {
 
   @HiveField(0)
-  int productId;
+  int? productId;
 
   @HiveField(1)
-  String url;
+  String? url;
 
   @HiveField(2)
-  int vues;
+  int? vues;
 
   @HiveField(3)
-  int note;
+  int? note;
 
   @HiveField(4)
-  String categorie;
+  String? categorie;
 
   @HiveField(5)
-  bool favorite;
+  bool? favorite;
 
-  Product({this.productId, this.url,this.vues, this.note, this.categorie, this.favorite});
+  Product({this.productId, this.url, this.vues,  this.note, this.categorie,  this.favorite});
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
     productId: json["productId"],
@@ -55,8 +55,8 @@ class Product {
   }
 }
 class MyTabs {
-  String title;
-  MyTabs({this.title});
+  String ?title;
+  MyTabs({ this.title});
 }
 
 enum productChip { TOUT, RECENT,MIEUX_NOTE, ALEATOIRE }

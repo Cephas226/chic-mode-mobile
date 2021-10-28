@@ -6,7 +6,7 @@ class Request{
   final String url;
   final dynamic body;
 
-  Request({this.url,this.body});
+  Request({required this.url,this.body});
 
   Future<http.Response> post() {
     return http.post(Uri.parse(urlBase+url), body: body).timeout(Duration(minutes: 2));
