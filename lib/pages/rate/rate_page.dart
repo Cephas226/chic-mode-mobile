@@ -22,12 +22,19 @@ class RatePage extends StatefulWidget {
 
 class _RatePageState extends State<RatePage> {
   CarouselController carouselController = new CarouselController();
-  //final _nativeAdController = NativeAdmobController();
+ 
   List<String> imageList = [];
   BannerAd? _anchoredBanner;
   var currentPos=0;
     bool _loadingAnchoredBanner = false;
-    Future<void> _createAnchoredBanner(BuildContext context) async {
+      BannerAd? bannerAd;
+  bool? isLoading;
+   static final AdRequest request = AdRequest(
+    keywords: <String>['foo', 'bar'],
+    contentUrl: 'http://foo.com/bar.html',
+    nonPersonalizedAds: true,
+  );
+  Future<void> _createAnchoredBanner(BuildContext context) async {
     final AnchoredAdaptiveBannerAdSize? size =
         await AdSize.getAnchoredAdaptiveBannerAdSize(
       Orientation.portrait,
@@ -41,8 +48,8 @@ class _RatePageState extends State<RatePage> {
 
     final BannerAd banner = BannerAd(
       size: size,
-      request: AdRequest(),
-      adUnitId: banniereUnitID1,
+      request: request,
+      adUnitId: banniereUnitID,
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
           print('$BannerAd loaded.');
@@ -60,16 +67,17 @@ class _RatePageState extends State<RatePage> {
     );
     return banner.load();
   }
+
    @override
   void initState() {
-    
+ 
     super.initState();
     
   }
  @override
   void dispose() {
-    super.dispose(); 
-    //_anchoredBanner?.dispose();
+    super.dispose();
+    _anchoredBanner?.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -81,6 +89,10 @@ class _RatePageState extends State<RatePage> {
             future: Dataservices.fetchProductx(),
             builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
               var data = snapshot.data;
+               if (!_loadingAnchoredBanner) {
+          _loadingAnchoredBanner = true;
+          _createAnchoredBanner(context);
+        }
               if (snapshot.data != null){
                 data=data!.reversed.toList()..shuffle();
               }
@@ -157,6 +169,13 @@ class _RatePageState extends State<RatePage> {
                                     Radius.circular(12))),
                           ),
                         ),
+                      if (_anchoredBanner != null)
+                  Container(
+                    color: Colors.green,
+                    width: _anchoredBanner!.size.width.toDouble(),
+                    height: _anchoredBanner!.size.height.toDouble(),
+                    child: AdWidget(ad: _anchoredBanner!),
+                  ),
                       ],
                     ),
               )

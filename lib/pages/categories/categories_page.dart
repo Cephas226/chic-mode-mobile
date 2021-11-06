@@ -58,7 +58,7 @@ class CategoriesPage extends GetView<CategoriesController> {
                               .where((o) => o.categorie == param2)
                               .toList()
                             ..shuffle();
-                          print(controller.productsList);
+                    
 
                           return LoadingOverlay(
                               isLoading: controller.isLoading,

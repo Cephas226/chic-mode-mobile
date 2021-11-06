@@ -20,7 +20,6 @@ import 'package:getx_app/widget/photo_widget/photohero.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:in_app_update/in_app_update.dart';
 import 'package:new_version/new_version.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rating_dialog/rating_dialog.dart';
@@ -43,51 +42,53 @@ class _HomePageState extends State<HomePage> {
   String titlexy = 'Accueil';
   List<String> imageList = [];
   var currentPos = 0;
-  BannerAd? bannerAd;
+ 
   bool? isLoading;
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
   bool _flexibleUpdateAvailable = false;
-  @override
+@override
   void initState() {
-    loadBanner();
-    _checkVersion();
     super.initState();
-  }
-   void _checkVersion() async {
-    final newVersion = NewVersion(
-      androidId: "com.snapchat.android",
-    );
-    final status = await newVersion.getVersionStatus();
-    newVersion.showUpdateDialog(
-      context: context,
-      versionStatus: status!,
-      dialogTitle: "UPDATE!!!",
-      dismissButtonText: "Skip",
-      dialogText: "Please update the app from " + "${status.localVersion}" + " to " + "${status.storeVersion}",
-      dismissAction: () {
-        SystemNavigator.pop();
-      },
-      updateButtonText: "Lets update",
+
+    // Instantiate NewVersion manager object (Using GCP Console app as example)
+    final newVersion = NewVersion( 
+      androidId: 'com.hopecode.chicmode',
     );
 
-    print("DEVICE : " + status.localVersion);
-    print("STORE : " + status.storeVersion);
+    // You can let the plugin handle fetching the status and showing a dialog,
+    // or you can fetch the status and display your own dialog, or no dialog.
+    const simpleBehavior = true;
+
+    if (simpleBehavior) {
+      basicStatusCheck(newVersion);
+    } else {
+      advancedStatusCheck(newVersion);
+    }
   }
-  loadBanner(){
-    bannerAd = BannerAd(
-        adUnitId: banniereUnitID,
-        request: AdRequest(),
-        size: AdSize.banner,
-        listener: BannerAdListener(onAdFailedToLoad: (_, error) {
-          print('Ad Failed to Load with Error');
-        }, onAdLoaded: (_) {
-          setState(() {
-            isLoading = true;
-          });
-        }));
-    bannerAd!.load();
+
+  basicStatusCheck(NewVersion newVersion) {
+    newVersion.showAlertIfNecessary(context: context);
   }
+
+  advancedStatusCheck(NewVersion newVersion) async {
+    final status = await newVersion.getVersionStatus();
+    if (status != null && status.localVersion!=status.storeVersion) {
+      debugPrint(status.releaseNotes);
+      debugPrint(status.appStoreLink);
+      debugPrint(status.localVersion);
+      debugPrint(status.storeVersion);
+      debugPrint(status.canUpdate.toString());
+      newVersion.showUpdateDialog(
+        context: context,
+        versionStatus: status,
+        dialogTitle: 'Mise à jour',
+        dialogText: 'Une nouvelle mise à jour est disponible. Veillez mettre à jour l\'application pour profiter des nouvelles fonctionnalités',
+      );
+    }
+  }
+  
+    BannerAd? _bannerAd;
 
   void showSnack(String text) {
     if (_scaffoldKey.currentContext != null) {
@@ -97,8 +98,53 @@ class _HomePageState extends State<HomePage> {
   }
   @override
   void dispose() {
-    bannerAd!.dispose();
+    
     super.dispose();
+  }
+
+ static final AdRequest request = AdRequest(
+    keywords: <String>['foo', 'bar'],
+    contentUrl: 'http://foo.com/bar.html',
+    nonPersonalizedAds: true,
+  );
+
+  InterstitialAd? _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+
+  RewardedAd? _rewardedAd;
+  int _numRewardedLoadAttempts = 0;
+
+  BannerAd? _anchoredBanner;
+  bool _loadingAnchoredBanner = false;
+  Future<void> _createAnchoredBanner(BuildContext context) async {
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getAnchoredAdaptiveBannerAdSize(
+      Orientation.portrait,
+      MediaQuery.of(context).size.width.truncate(),
+    );
+
+    if (size == null) {
+      return;
+    }
+
+    final BannerAd banner = BannerAd(
+      size: size,
+      request: request,
+      adUnitId:banniereUnitID,
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          setState(() {
+            _anchoredBanner = ad as BannerAd?;
+          });
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          ad.dispose();
+        },
+        onAdOpened: (Ad ad) => print('$BannerAd onAdOpened.'),
+        onAdClosed: (Ad ad) => print('$BannerAd onAdClosed.'),
+      ),
+    );
+    return banner.load();
   }
 
   @override
@@ -110,20 +156,7 @@ class _HomePageState extends State<HomePage> {
       'Mieux noté',
       'Aléatoire'
     ];
-
-    Widget checkForAd() {
-      if (isLoading == true) {
-        return Container(
-          child: AdWidget(ad: bannerAd!),
-          width: bannerAd!.size.width.toDouble(),
-          height: bannerAd!.size.height.toDouble(),
-          alignment: Alignment.center,
-        );
-      } else {
-        return Container();
-      }
-    }
-
+ 
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -144,7 +177,7 @@ class _HomePageState extends State<HomePage> {
             elevation: 0,
             backgroundColor: Color(0xFFF70759),
           ),
-          //bottomNavigationBar: checkForAd(),
+        
           drawer: _buildDrawer(context),
           body: TabBarView(
             controller: _prodController.controller,
@@ -157,6 +190,10 @@ class _HomePageState extends State<HomePage> {
                       Obx(() => Wrap(
                           spacing: 20,
                           children: List<Widget>.generate(4, (int index) {
+                          if (!_loadingAnchoredBanner) {
+                                _loadingAnchoredBanner = true;
+                                _createAnchoredBanner(context);
+                              }
                             return InkWell(
                               onTap: () => {},
                               child: ChoiceChip(
@@ -213,6 +250,13 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       )
+                    ,if (_anchoredBanner != null)
+                  Container(
+                    color: Colors.green,
+                    width: _anchoredBanner!.size.width.toDouble(),
+                    height: _anchoredBanner!.size.height.toDouble(),
+                    child: AdWidget(ad: _anchoredBanner!),
+                  ),
                     ],
                   ),
                 ),

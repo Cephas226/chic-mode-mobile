@@ -13,7 +13,6 @@ class Request{
   }
 
   Future<http.Response> get(){
-    print(urlBase+url);
     return http.get(Uri.parse(urlBase+url)).timeout(Duration(minutes: 2));
   }
 }

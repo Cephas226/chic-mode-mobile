@@ -20,6 +20,7 @@ class CategoriesController extends GetxController {
    showInterstitialAd() {
     if (interstitialAd == null) {
       print('Warning: attempt to show interstitial before loaded.');
+      Get.off(() => DashboardPage());
       return;
     }
     interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
@@ -40,15 +41,14 @@ class CategoriesController extends GetxController {
     interstitialAd!.show();
     interstitialAd = null;
   }
-   @override
+  @override
   void dispose() {
     super.dispose();
     interstitialAd?.dispose();
-    _bannerAd?.dispose();
   }
       _createInterstitialAd() {
     InterstitialAd.load(
-        adUnitId: interstitielUnitID,
+        adUnitId:interstitielUnitID,
         request: AdRequest(),
         adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (InterstitialAd ad) {

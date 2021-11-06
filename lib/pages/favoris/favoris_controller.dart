@@ -37,6 +37,5 @@ class FavorisController extends GetxController {
   }
   void removeProduct(int id) async{
     productBox!.deleteAt(id);
-    print("succes");
   }
 }

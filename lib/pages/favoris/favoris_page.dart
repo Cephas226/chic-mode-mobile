@@ -80,7 +80,6 @@ Widget _builListView() {
   return ValueListenableBuilder(
     valueListenable: _favController.valueListenable,
     builder: (context, box, _) {
-      print(Hive.box<Product>('product').values);
       if (Hive.box<Product>('product').values.length == 0)
         return Center(
           child: Text("Aucune image"),

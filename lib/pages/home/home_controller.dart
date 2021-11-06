@@ -82,7 +82,6 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
 
   addProduct(prod, context) async {
     productBox!.add(prod);
-    print(productBox);
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Enregistré dans favoris')));
   }
@@ -97,7 +96,6 @@ class HomeController extends GetxController with SingleGetTickerProviderMixin {
     switch (chip) {
       case productChip.TOUT:
         productsList.value = productsListProd.toList()..shuffle();
-        print(productsList);
         return productsList;
 
       case productChip.RECENT:
